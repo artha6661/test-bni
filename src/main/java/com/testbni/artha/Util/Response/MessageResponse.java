@@ -1,4 +1,4 @@
-package com.testbni.artha.Util;
+package com.testbni.artha.Util.Response;
 
 public class MessageResponse {
 	private String message;

@@ -3,8 +3,10 @@ package com.testbni.artha.Controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,19 +24,26 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api")
 @Slf4j
-public class UserController {
+public class RegistrationController {
 
     @Autowired
     private RegistrationService registrationService;
+
 
     @PostMapping("/register")
     public ResponseEntity<?> registerParticipant(@RequestBody User participant) {
         return registrationService.register(participant);
     }
 
-    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
-        return registrationService.sendValidationEmail(confirmationToken);
+    // @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    // public ResponseEntity<?> confirmUserAccount(@RequestParam("token")String confirmationToken) {
+    //     return registrationService.sendValidationEmail(confirmationToken);
+    // }
+
+    @GetMapping("/confirmation/{token}")
+    public ResponseEntity<?> confirmUserAccount(@PathVariable("token") String token){
+        return registrationService.sendValidationEmail(token);
+        
     }
 
     @GetMapping("/check-status")

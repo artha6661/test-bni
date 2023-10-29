@@ -116,6 +116,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.icegreen</groupId>
+			<artifactId>greenmail</artifactId>
+			<version>1.6.0</version> <!-- Use the latest version -->
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
