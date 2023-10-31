@@ -1,5 +1,6 @@
 package com.testbni.artha.Model;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
@@ -29,7 +30,7 @@ public class Validation {
 
     private String validationCode; 
 
-    private LocalDateTime expirationTime;
+    private Instant expirationTime;
 
     private String email;
 
@@ -40,12 +41,13 @@ public class Validation {
     @JoinColumn(nullable = false, name = "id")
     private User user;
 
-    public Validation(){}
+    // public Validation(){}
 
-    public Validation(User user) {
-        this.user = user;
-        this.email = user.getEmail();
-        createdDate = new Date();
-        validationCode = UUID.randomUUID().toString();
-    }
+    // public Validation(User user) {
+    //     this.user = user;
+    //     this.email = user.getEmail();
+    //     createdDate = new Date();
+    //     validationCode = UUID.randomUUID().toString();
+    //     expirationTime = Instant.now().plusMillis(18000);
+    // }
 }

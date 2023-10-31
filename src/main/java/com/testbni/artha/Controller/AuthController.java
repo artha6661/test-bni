@@ -25,7 +25,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.testbni.artha.Config.Auth.JwtUtils;
+import com.testbni.artha.Config.RefreshToken.RefreshTokenService;
 import com.testbni.artha.Config.Request.LoginRequest;
+import com.testbni.artha.Model.Validation;
 import com.testbni.artha.Repository.UserRepository;
 import com.testbni.artha.ServiceImpl.UserDetailsImpl;
 import com.testbni.artha.Util.Response.MessageResponse;
@@ -45,6 +47,9 @@ public class AuthController {
     PasswordEncoder encoder;
 
     @Autowired
+    RefreshTokenService refreshTokenService;
+
+    @Autowired
     JwtUtils jwtUtils;
 
     @PostMapping("/signin")
@@ -59,22 +64,32 @@ public class AuthController {
 
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
-        List<String> status = userDetails.getAuthorities().stream()
+        List<String> roles = userDetails.getAuthorities().stream()
             .map(item -> item.getAuthority())
             .collect(Collectors.toList());
+        
+        Validation refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        
+        ResponseCookie jwtRefreshCookie = jwtUtils.generateRefreshJwtCookie(refreshToken.getValidationCode());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-            .body(new UserInfoResponse(userDetails.getId(),
-                                    userDetails.getUsername(),
-                                    userDetails.getEmail(),
-                                    status));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+                .body(new UserInfoResponse(userDetails.getId(),
+                                            userDetails.getUsername(),
+                                            userDetails.getEmail(),
+                                            roles));
     }
 
 
     @PostMapping("/signout")
     public ResponseEntity<?> logoutUser() {
         ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString())
-            .body(new MessageResponse("You've been signed out!"));
+        ResponseCookie jwtRefreshCookie = jwtUtils.getCleanJwtRefreshCookie();
+
+        return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .header(HttpHeaders.SET_COOKIE, jwtRefreshCookie.toString())
+        .body(new MessageResponse("You've been signed out!"));
     }
 }
